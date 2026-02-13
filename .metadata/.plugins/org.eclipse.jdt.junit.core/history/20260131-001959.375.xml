@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="PlanifyServiceTest" project="PlanifyApp" tests="5" started="5" failures="0" errors="1" ignored="0">
+  <testsuite name="planify.PlanifyServiceTest" time="0.167" displayname="PlanifyServiceTest" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]">
+    <testcase name="testCrearFavorito" classname="planify.PlanifyServiceTest" time="0.057" displayname="testCrearFavorito()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearFavorito()]">
+      <error>java.lang.NullPointerException: Cannot invoke "model.entity.Persona.getIdPersonas()" because the return value of "model.entity.Favorito.getPersona()" is null&#13;
+	at model.service.FavoritoServiceImpl.agregar(FavoritoServiceImpl.java:20)&#13;
+	at planify.PlanifyServiceTest.testCrearFavorito(PlanifyServiceTest.java:107)&#13;
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)&#13;
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)&#13;
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)&#13;
+&#13;
+</error>
+    </testcase>
+    <testcase name="testCrearReserva" classname="planify.PlanifyServiceTest" time="0.04" displayname="testCrearReserva()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearReserva()]"/>
+    <testcase name="testCrearEvento" classname="planify.PlanifyServiceTest" time="0.036" displayname="testCrearEvento()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearEvento()]"/>
+    <testcase name="testCrearContacto" classname="planify.PlanifyServiceTest" time="0.031" displayname="testCrearContacto()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearContacto()]"/>
+    <testcase name="testCrearCategoria" classname="planify.PlanifyServiceTest" time="0.002" displayname="testCrearCategoria()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearCategoria()]"/>
+  </testsuite>
+</testrun>

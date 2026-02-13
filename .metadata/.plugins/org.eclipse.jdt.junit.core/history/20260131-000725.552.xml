@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="PlanifyServiceTest" project="PlanifyApp" tests="3" started="3" failures="0" errors="0" ignored="0">
+  <testsuite name="planify.PlanifyServiceTest" time="0.088" displayname="PlanifyServiceTest" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]">
+    <testcase name="testCrearEvento" classname="planify.PlanifyServiceTest" time="0.028" displayname="testCrearEvento()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearEvento()]"/>
+    <testcase name="testCrearContacto" classname="planify.PlanifyServiceTest" time="0.055" displayname="testCrearContacto()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearContacto()]"/>
+    <testcase name="testCrearCategoria" classname="planify.PlanifyServiceTest" time="0.003" displayname="testCrearCategoria()" uniqueid="[engine:junit-jupiter]/[class:planify.PlanifyServiceTest]/[method:testCrearCategoria()]"/>
+  </testsuite>
+</testrun>
