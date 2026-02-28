@@ -1,0 +1,90 @@
+<h2 class="text-xl font-semibold mb-4">Panel de administración</h2>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <!-- FORM -->
+  <div class="lg:col-span-1 rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-semibold">
+        {{ editingId ? 'Editar evento' : 'Crear evento' }}
+      </h3>
+      <button
+        (click)="startCreate()"
+        class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white/10"
+      >
+        Nuevo
+      </button>
+    </div>
+
+    <div class="grid gap-3">
+      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+             placeholder="Título" [(ngModel)]="form.titulo" />
+
+      <textarea class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+                placeholder="Descripción" rows="3" [(ngModel)]="form.descripcion"></textarea>
+
+      <div class="grid grid-cols-2 gap-3">
+        <select class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+                [(ngModel)]="form.categoria">
+          <option>Cine</option>
+          <option>Teatro</option>
+          <option>Música</option>
+          <option>Videojuegos</option>
+        </select>
+
+        <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+               type="date" [(ngModel)]="form.fechaISO" />
+      </div>
+
+      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+             placeholder="Ubicación" [(ngModel)]="form.ubicacion" />
+
+      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+             type="number" placeholder="Precio (€)" [(ngModel)]="form.precio" />
+
+      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+             placeholder="Imagen URL" [(ngModel)]="form.imagenUrl" />
+
+      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+             placeholder="Web oficial" [(ngModel)]="form.webOficial" />
+
+      <button (click)="save()"
+              class="rounded-xl bg-red-500 px-4 py-3 font-semibold text-white hover:opacity-90">
+        {{ editingId ? 'Guardar cambios' : 'Crear evento' }}
+      </button>
+
+      <p class="text-xs text-zinc-400">
+        *Este CRUD es demo (LocalStorage). En producción se conectaría a la API.
+      </p>
+    </div>
+  </div>
+
+  <!-- LISTA -->
+  <div class="lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-semibold">Eventos ({{ eventos.length }})</h3>
+    </div>
+
+    <div class="space-y-3">
+      <div *ngFor="let e of eventos"
+           class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4">
+        <div>
+          <div class="text-sm text-zinc-300">{{ e.categoria }} · {{ e.ubicacion }} · {{ e.fechaISO }}</div>
+          <div class="mt-1 text-lg font-semibold">{{ e.titulo }}</div>
+          <div class="mt-2 text-sm text-zinc-300 line-clamp-2">{{ e.descripcion }}</div>
+          <div class="mt-2 text-sm text-zinc-200">Precio: <b>{{ e.precio }} €</b></div>
+        </div>
+
+        <div class="flex gap-2">
+          <button (click)="startEdit(e)"
+                  class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
+            Editar
+          </button>
+          <button (click)="remove(e.id)"
+                  class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
+            Borrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
