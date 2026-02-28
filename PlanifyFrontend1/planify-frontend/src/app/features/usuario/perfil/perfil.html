@@ -1,0 +1,191 @@
+<div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-2xl font-semibold">Perfil</h2>
+
+    <div *ngIf="auth.isLogged" class="text-sm text-zinc-300">
+      {{ auth.user?.nombre }} · <span class="font-semibold">{{ auth.user?.rol }}</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mt-6 flex flex-wrap gap-2">
+    <button
+      (click)="setTab('perfil')"
+      class="rounded-full px-4 py-2 text-sm border border-white/10 hover:bg-white/10"
+      [class.bg-white/10]="tab === 'perfil'"
+    >
+      Mi perfil
+    </button>
+
+    <button
+      (click)="setTab('favoritos')"
+      class="rounded-full px-4 py-2 text-sm border border-white/10 hover:bg-white/10"
+      [class.bg-white/10]="tab === 'favoritos'"
+      [disabled]="!auth.isLogged"
+      [class.opacity-50]="!auth.isLogged"
+    >
+      Favoritos
+    </button>
+
+    <button
+      (click)="setTab('reservas')"
+      class="rounded-full px-4 py-2 text-sm border border-white/10 hover:bg-white/10"
+      [class.bg-white/10]="tab === 'reservas'"
+      [disabled]="!auth.isLogged"
+      [class.opacity-50]="!auth.isLogged"
+    >
+      Reservas
+    </button>
+
+    <a
+      *ngIf="auth.rol === 'admin'"
+      routerLink="/admin"
+      class="rounded-full px-4 py-2 text-sm border border-white/10 hover:bg-white/10"
+    >
+      Panel admin
+    </a>
+  </div>
+
+  <!-- TAB: PERFIL -->
+  <div class="mt-8" *ngIf="tab === 'perfil'">
+    <!-- Login si no hay sesión -->
+    <div *ngIf="!auth.isLogged" class="grid gap-3 max-w-lg">
+      <p class="text-zinc-300">Inicia sesión (modo demo)</p>
+
+      <input
+        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+        placeholder="Nombre"
+        [(ngModel)]="nombre"
+      />
+      <input
+        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+        placeholder="Email"
+        [(ngModel)]="email"
+      />
+
+      <div class="flex gap-4 text-sm text-zinc-200">
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="rol" [(ngModel)]="rol" value="user" />
+          Usuario
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="rol" [(ngModel)]="rol" value="admin" />
+          Admin
+        </label>
+      </div>
+
+      <button
+        (click)="login()"
+        class="rounded-xl bg-white px-4 py-3 font-semibold text-zinc-900 hover:opacity-95"
+      >
+        Entrar
+      </button>
+    </div>
+
+    <!-- Perfil si hay sesión -->
+    <div *ngIf="auth.isLogged" class="grid gap-4 max-w-lg">
+      <div class="text-sm text-zinc-300">
+        Sesión iniciada como <b class="text-zinc-100">{{ auth.user?.nombre }}</b>
+        ({{ auth.user?.rol }})
+      </div>
+
+      <input
+        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+        placeholder="Nombre"
+        [(ngModel)]="editNombre"
+      />
+      <input
+        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
+        placeholder="Email"
+        [(ngModel)]="editEmail"
+      />
+
+      <div class="flex gap-2">
+        <button
+          (click)="guardarPerfil()"
+          class="rounded-xl bg-white/10 px-4 py-3 font-semibold hover:bg-white/15"
+        >
+          Guardar cambios
+        </button>
+
+        <button
+          (click)="logout()"
+          class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-semibold hover:bg-white/10"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: FAVORITOS -->
+  <div class="mt-8" *ngIf="tab === 'favoritos'">
+    <p *ngIf="eventosFav.length === 0" class="text-zinc-300">No tienes favoritos.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="eventosFav.length > 0">
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden" *ngFor="let e of eventosFav">
+        <a [routerLink]="['/eventos', e.id]">
+          <img
+            [src]="e.imagenUrl"
+            [alt]="e.titulo"
+            class="h-32 w-full object-cover"
+            loading="lazy"
+            (error)="($any($event.target)).src='https://picsum.photos/600/400?blur=1'"
+          />
+        </a>
+
+        <div class="p-4">
+          <div class="font-semibold line-clamp-1">{{ e.titulo }}</div>
+          <div class="mt-1 text-xs text-zinc-400">{{ e.categoria }} · {{ e.ubicacion }}</div>
+
+          <button
+            (click)="quitarFav(e.id)"
+            class="mt-3 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10"
+          >
+            Quitar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RESERVAS -->
+  <div class="mt-8" *ngIf="tab === 'reservas'">
+    <p *ngIf="reservas.length === 0" class="text-zinc-300">Aún no tienes reservas.</p>
+
+    <div class="space-y-3" *ngIf="reservas.length > 0">
+      <div
+        *ngFor="let r of reservas"
+        class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4"
+      >
+        <div>
+          <div class="text-lg font-semibold">{{ r.eventTitulo }}</div>
+          <div class="text-sm text-zinc-300">Fecha: {{ r.fechaISO }}</div>
+          <div class="mt-2 text-sm">
+            Estado:
+            <span class="rounded-lg px-2 py-1 border border-white/10"
+                  [class.opacity-60]="r.estado === 'cancelada'">
+              {{ r.estado }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            *ngIf="r.estado !== 'cancelada'"
+            (click)="cancelarReserva(r.id)"
+            class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10"
+          >
+            Cancelar
+          </button>
+          <button
+            (click)="borrarReserva(r.id)"
+            class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10"
+          >
+            Borrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+<div class="min-h-screen bg-zinc-950 text-zinc-100">
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 bg-black/70 backdrop-blur border-b border-white/10">
+    <div class="mx-auto flex max-w-6xl items-center gap-6 px-4 py-4">
+      <!-- Logo -->
+      <a routerLink="/" class="text-2xl font-semibold tracking-wide">
+        Planify
+      </a>
+
+      <!-- Links tipo captura -->
+      <nav class="hidden md:flex items-center gap-8 text-sm text-zinc-200">
+        <a routerLink="/" class="hover:text-white">Inicio</a>
+
+        <!-- Botón categorías -->
+        <button
+          (click)="toggleCategorias()"
+          class="font-semibold hover:text-white"
+          [class.text-white]="menuCategoriasAbierto"
+        >
+          Categorías
+        </button>
+
+        <a routerLink="/contacto" class="hover:text-white">Contacto</a>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-3">
+        <!-- Buscador pill -->
+        <div class="hidden sm:flex items-center gap-3 rounded-full bg-white/95 px-4 py-2 text-zinc-900 shadow">
+          <span class="text-zinc-500">lupa svg</span>
+          <input
+            class="w-64 bg-transparent outline-none placeholder:text-zinc-500"
+            type="text"
+            placeholder="Busca tu evento..."
+            [value]="filtro.query"
+            (input)="filtro.query = ($any($event.target)).value"
+          />
+        </div>
+
+        <!-- Iconos -->
+        <a routerLink="/favoritos" class="rounded-full p-2 hover:bg-white/10" title="Favoritos">
+          <span class="text-xl">♡</span>
+        </a>
+
+        <a routerLink="/perfil" class="rounded-full p-2 hover:bg-white/10" title="Perfil">
+          <span class="text-xl">Ⓟ</span>
+        </a>
+
+        <!-- Admin -->
+        <a *ngIf="auth.rol === 'admin'" routerLink="/admin" class="rounded-lg px-3 py-2 hover:bg-white/10 text-sm">
+          Admin
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- DRAWER CATEGORÍAS -->
+  <!-- overlay -->
+  <div
+    *ngIf="menuCategoriasAbierto"
+    class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+    (click)="cerrarCategorias()"
+  ></div>
+
+  <!-- panel -->
+  <aside
+    class="fixed left-0 top-0 z-50 h-full w-[340px] max-w-[85vw] bg-zinc-900/95 border-r border-white/10 p-6 transform transition-transform duration-300"
+    [class.-translate-x-full]="!menuCategoriasAbierto"
+  >
+    <!-- cabecera drawer -->
+    <div class="flex items-center gap-3 mb-6">
+      <button
+        (click)="cerrarCategorias()"
+        class="rounded-full bg-white/10 px-4 py-2 text-sm hover:bg-white/15"
+      >
+        ‹ <span class="ml-2">{{ filtro.categoria || 'Categorías' }}</span>
+      </button>
+    </div>
+
+    <!-- lista -->
+    <div class="space-y-2">
+      <!-- todas -->
+      <button
+        (click)="seleccionarCategoria(null)"
+        class="w-full flex items-center gap-4 rounded-2xl px-2 py-2 hover:bg-white/10"
+      >
+        <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">★</div>
+        <div class="text-left">
+          <div class="font-semibold">Todas</div>
+          <div class="text-xs text-zinc-400">Ver todos los eventos</div>
+        </div>
+      </button>
+
+      <!-- categorías dinámicas -->
+      <button
+        *ngFor="let c of categorias"
+        (click)="seleccionarCategoria(c)"
+        class="w-full flex items-center gap-4 rounded-2xl px-2 py-2 hover:bg-white/10"
+      >
+        <img
+          [src]="thumb(c)"
+          [alt]="c"
+          class="h-10 w-10 rounded-xl object-cover border border-white/10"
+          loading="lazy"
+        />
+        <div class="text-left">
+          <div class="font-semibold">{{ c }}</div>
+          <div class="text-xs text-zinc-400">Explorar {{ c.toLowerCase() }}</div>
+        </div>
+      </button>
+
+      <!-- limpiar -->
+      <button
+        (click)="filtro.categoria=null; filtro.query=''; cerrarCategorias()"
+        class="mt-4 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200 hover:bg-white/10"
+      >
+        Limpiar filtros
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="mx-auto max-w-6xl px-4 py-6">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="mt-10 pb-10 text-center text-zinc-400">
+    ©2026 - Planify
+  </footer>
+</div>
