@@ -1,11 +1,15 @@
 export interface Evento {
-  id: string;
-  titulo: string;
+idEventos?: number;   // Antes id_eventos
+  nombre: string;
   descripcion: string;
-  categoria: string;
-  fechaISO: string;
   ubicacion: string;
   precio: number;
-  imagenUrl: string;
-  webOficial: string;
-}
+  capacidad: number;
+  imagenUrl: string;    // Antes imagen_url
+  urlReserva: string;   // Antes url_reserva
+  fechaInicio: string;  // Antes fecha_de_inicio
+  recomendado: boolean;
+  categoria: {
+    idCategorias: number; // Antes id_categorias
+    nombre?: string;
+  };}

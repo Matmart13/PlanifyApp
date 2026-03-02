@@ -1,71 +1,112 @@
-import { Injectable } from '@angular/core';
 import { Evento } from '../models/evento.model';
-
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 const KEY = 'planify_eventos';
 
 function seed(): Evento[] {
   return [
-    { id:'1', titulo:'Estreno cine', descripcion:'...', categoria:'Cine', fechaISO:'2026-03-10', ubicacion:'Madrid', precio:9, imagenUrl:'https://picsum.photos/600/300?1', webOficial:'https://example.com' },
-    { id:'2', titulo:'Obra clásica', descripcion:'...', categoria:'Teatro', fechaISO:'2026-03-12', ubicacion:'Valencia', precio:25, imagenUrl:'https://picsum.photos/600/300?2', webOficial:'https://example.com' },
-    { id:'3', titulo:'Concierto pop', descripcion:'...', categoria:'Música', fechaISO:'2026-04-01', ubicacion:'Barcelona', precio:45, imagenUrl:'https://picsum.photos/600/300?3', webOficial:'https://example.com' },
-    { id:'4', titulo:'Torneo eSports', descripcion:'...', categoria:'Videojuegos', fechaISO:'2026-04-05', ubicacion:'Sevilla', precio:15, imagenUrl:'https://picsum.photos/600/300?4', webOficial:'https://example.com' },
+    { 
+      idEventos: 1, 
+      nombre: 'Estreno cine', 
+      descripcion: '...', 
+      capacidad: 100,  // Añadido
+      categoria: { idCategorias: 1, nombre: 'Cine' }, // Ajustado a objeto
+      fechaInicio: '2026-03-10', 
+      ubicacion: 'Madrid', 
+      precio: 9, 
+      imagenUrl: 'https://picsum.photos/600/300?1', 
+      urlReserva: 'https://example.com' ,
+      recomendado: true
+    },
+    { 
+      idEventos: 2, 
+      nombre: 'Obra clásica', 
+      descripcion: '...', 
+      capacidad: 50,
+      categoria: { idCategorias: 2, nombre: 'Teatro' }, 
+      fechaInicio: '2026-03-12', 
+      ubicacion: 'Valencia', 
+      precio: 25, 
+      imagenUrl: 'https://picsum.photos/600/300?2', 
+      urlReserva: 'https://example.com' ,
+      recomendado: true
+    },
+    { 
+      idEventos: 3, 
+      nombre: 'Concierto pop', 
+      descripcion: '...', 
+      capacidad: 500,
+      categoria: { idCategorias: 3, nombre: 'Música' }, 
+      fechaInicio : '2026-04-01', 
+      ubicacion: 'Barcelona', 
+      precio: 45, 
+      imagenUrl : 'https://picsum.photos/600/300?3', 
+      urlReserva: 'https://example.com' ,
+      recomendado: true
+    },
+    { 
+      idEventos: 4, 
+      nombre: 'Torneo eSports', 
+      descripcion: '...', 
+      categoria: { idCategorias: 4, nombre: 'Videojuegos' }, 
+      capacidad: 200,
+      fechaInicio : '2026-04-05', 
+      ubicacion: 'Sevilla', 
+      precio: 15, 
+      imagenUrl: 'https://picsum.photos/600/300?4', 
+      urlReserva: 'https://example.com' ,
+      recomendado: true
+    },
   ];
 }
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class EventosService {
+  
+  // La URL que configuramos en tu application.properties
+  private apiUrl = 'http://localhost:8080/api/eventos';
 
-  private load(): Evento[] {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) {
-        const s = seed();
-        localStorage.setItem(KEY, JSON.stringify(s));
-        return s;
+  constructor(private http: HttpClient) {}
+
+  // Obtener todos los eventos desde la DB
+  getEventos(): Observable<Evento[]> {
+    return this.http.get<Evento[]>(this.apiUrl);
+  }
+
+  // Obtener un evento por ID (Ojo: en tu Java es un Long, aquí pasamos número o string)
+  getEventoById(id: string | number): Observable<Evento> {
+    return this.http.get<Evento>(`${this.apiUrl}/${id}`);
+  }
+
+  // Crear evento enviándolo al Backend
+  createEvento(data: Omit<Evento, 'id'>): Observable<Evento> {
+    return this.http.post<Evento>(this.apiUrl, data);
+  }
+
+  // Actualizar evento
+  updateEvento(id: string | number, patch: Partial<Evento>): Observable<Evento> {
+    return this.http.put<Evento>(`${this.apiUrl}/${id}`, patch);
+  }
+
+  // Borrar de la DB
+  deleteEvento(id: string | number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Obtener categorías únicas (basado en los datos que vienen del servidor)
+getCategorias(): Observable<string[]> {
+  return this.getEventos().pipe(
+    map(eventos => {
+      const set = new Set<string>();
+      // El bucle va AQUÍ adentro, donde 'eventos' ya es el Array real
+      for (const e of eventos) {
+        if (e.categoria?.nombre?.trim()) set.add(e.categoria.nombre.trim());
       }
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private save(list: Evento[]) {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  }
-
-  getEventos(): Evento[] {
-    return this.load();
-  }
-
-  getEventoById(id: string): Evento | undefined {
-    return this.load().find(e => e.id === id);
-  }
-
-  createEvento(data: Omit<Evento, 'id'>): Evento {
-    const evento: Evento = { id: crypto.randomUUID(), ...data };
-    const next = [evento, ...this.load()];
-    this.save(next);
-    return evento;
-  }
-
-  updateEvento(id: string, patch: Partial<Omit<Evento, 'id'>>): void {
-    const next = this.load().map(e => e.id === id ? ({ ...e, ...patch }) : e);
-    this.save(next);
-  }
-
-  deleteEvento(id: string): void {
-    const next = this.load().filter(e => e.id !== id);
-    this.save(next);
-  }
-
-  getCategorias(): string[] {
-    const eventos = this.getEventos();
-    const set = new Set<string>();
-    for (const e of eventos) {
-      if (e.categoria && e.categoria.trim()) set.add(e.categoria.trim());
-    }
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }
-
+      return Array.from(set).sort();
+    })
+  );
+}
 }

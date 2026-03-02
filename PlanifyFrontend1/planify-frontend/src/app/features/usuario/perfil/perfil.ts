@@ -101,12 +101,22 @@ export class Perfil {
   }
 
   // --- Favoritos ---
-  refreshFavoritos() {
-    const ids = this.favs.list();
-    this.eventosFav = this.eventosService.getEventos().filter(e => ids.includes(e.id));
-  }
+refreshFavoritos() {
+  const ids = this.favs.list();
 
-  quitarFav(id: string) {
+  // 1. Nos suscribimos al servicio (viniendo de la API de Java)
+  this.eventosService.getEventos().subscribe({
+    next: (todosLosEventos: Evento[]) => {
+      // 2. Filtramos el Array real una vez que llega del servidor
+      // 3. Tipamos 'e' como 'Evento' para quitar el error TS7006
+      this.eventosFav = todosLosEventos.filter((e: Evento) => ids.includes(e.idEventos!.toString()));
+    },
+    error: (err) => {
+      console.error('Error al cargar favoritos del servidor:', err);
+    }
+  });
+}
+  quitarFav(id: number) {
     this.favs.remove(id);
     this.refreshFavoritos();
   }

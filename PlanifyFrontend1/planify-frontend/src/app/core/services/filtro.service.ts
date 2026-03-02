@@ -6,11 +6,10 @@ export class FiltroService {
   query: string= '';
 }
 
-export function normalizarTexto(s: string): string {
-  return (s ?? '')
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')              // separa acentos
-    .replace(/[\u0300-\u036f]/g, '') // quita acentos
-    .replace(/\s+/g, ' ');         // colapsa espacios
+export function normalizarTexto(s: any): string {
+  // Si s es un objeto (la categoría de Java), extraemos el nombre. 
+  // Si no, lo usamos tal cual.
+  const texto = (s && typeof s === 'object') ? s.nombre : s;
+  return (texto ?? "").toString().toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 }

@@ -17,7 +17,7 @@
 
     <div class="grid gap-3">
       <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Título" [(ngModel)]="form.titulo" />
+             placeholder="Título" [(ngModel)]="form.nombre" />
 
       <textarea class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
                 placeholder="Descripción" rows="3" [(ngModel)]="form.descripcion"></textarea>
@@ -32,7 +32,7 @@
         </select>
 
         <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-               type="date" [(ngModel)]="form.fechaISO" />
+               type="date" [(ngModel)]="form.fechaInicio" />
       </div>
 
       <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
@@ -45,7 +45,7 @@
              placeholder="Imagen URL" [(ngModel)]="form.imagenUrl" />
 
       <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Web oficial" [(ngModel)]="form.webOficial" />
+             placeholder="Web oficial" [(ngModel)]="form.urlReserva" />
 
       <button (click)="save()"
               class="rounded-xl bg-red-500 px-4 py-3 font-semibold text-white hover:opacity-90">
@@ -68,8 +68,10 @@
       <div *ngFor="let e of eventos"
            class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4">
         <div>
-          <div class="text-sm text-zinc-300">{{ e.categoria }} · {{ e.ubicacion }} · {{ e.fechaISO }}</div>
-          <div class="mt-1 text-lg font-semibold">{{ e.titulo }}</div>
+<div class="text-sm text-zinc-300">
+  {{ e.categoria.nombre }} · {{ e.ubicacion }} · {{ e.fechaInicio }}
+</div>         
+ <div class="mt-1 text-lg font-semibold">{{ e.nombre }}</div>
           <div class="mt-2 text-sm text-zinc-300 line-clamp-2">{{ e.descripcion }}</div>
           <div class="mt-2 text-sm text-zinc-200">Precio: <b>{{ e.precio }} €</b></div>
         </div>
@@ -79,7 +81,7 @@
                   class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
             Editar
           </button>
-          <button (click)="remove(e.id)"
+          <button (click)="remove(e.idEventos)"
                   class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
             Borrar
           </button>

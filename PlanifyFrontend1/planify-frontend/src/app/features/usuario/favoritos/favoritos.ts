@@ -15,7 +15,7 @@ export class Favoritos {
   eventosFav: Evento[] = [];
 
   constructor(
-    private eventos: EventosService,
+    private eventos: EventosService, // <-- Aquí lo llamas "eventos"
     public favs: FavoritosService
   ) {
     this.refresh();
@@ -23,10 +23,20 @@ export class Favoritos {
 
   refresh() {
     const ids = this.favs.list();
-    this.eventosFav = this.eventos.getEventos().filter(e => ids.includes(e.id));
+
+    // 1. CAMBIO AQUÍ: Usamos "this.eventos" porque así se llama en el constructor
+    this.eventos.getEventos().subscribe({
+      next: (listaDeEventos: Evento[]) => {
+        // 2. Filtramos usando los IDs que vienen de tu FavService
+        this.eventosFav = listaDeEventos.filter((e: Evento) => ids.includes(e.idEventos!.toString()));
+      },
+      error: (err) => {
+        console.error('Error al obtener favoritos del servidor:', err);
+      }
+    });
   }
 
-  quitar(id: string) {
+  quitar(id: number) {
     this.favs.remove(id);
     this.refresh();
   }

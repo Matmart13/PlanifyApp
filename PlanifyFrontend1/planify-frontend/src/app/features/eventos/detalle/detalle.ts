@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; // 1. Añadimos OnInit
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { EventosService } from '../../../core/services/evento.service'; // ajusta ruta si la tienes distinta
+import { EventosService } from '../../../core/services/evento.service'; 
 import { FavoritosService } from '../../../core/services/favorito.service';
 import { ReservasService } from '../../../core/services/reservas.service';
 import { Evento } from '../../../core/models/evento.model';
@@ -15,7 +15,7 @@ import { normalizarTexto } from '../../../core/services/filtro.service';
   templateUrl: './detalle.html',
   styleUrl: './detalle.css',
 })
-export class Detalle {
+export class Detalle implements OnInit { // 2. Implementamos la interfaz
   evento?: Evento;
   relacionados: Evento[] = [];
 
@@ -24,41 +24,53 @@ export class Detalle {
     private eventosService: EventosService,
     public favs: FavoritosService,
     private reservas: ReservasService
-  ) {
+  ) {}
+
+  // 3. Pasamos la lógica al ngOnInit
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.evento = this.eventosService.getEventoById(id);
-    this.loadRelacionados();
+    
+    // Primero cargamos el evento principal
+    this.eventosService.getEventoById(id).subscribe({
+      next: (data) => {
+        this.evento = data;
+        // Solo cuando tenemos el evento, buscamos los relacionados
+        this.loadRelacionados();
+      },
+      error: (err) => console.error('Error cargando el detalle:', err)
+    });
   }
 
   toggleFav(ev: Event, id?: string) {
     ev.stopPropagation();
     ev.preventDefault();
-    if (id) this.favs.toggle(id);
+    if (id) this.favs.toggle(parseInt(id));
   }
 
   reservar(ev: Event) {
     ev.preventDefault();
     ev.stopPropagation();
     if (!this.evento) return;
-    this.reservas.crearReserva(this.evento.id, this.evento.titulo, this.evento.fechaISO);
+    this.reservas.crearReserva(this.evento.idEventos?.toString() ?? '', this.evento.nombre, this.evento.fechaInicio);
     alert('Reserva/recordatorio guardado ✅');
   }
 
   private loadRelacionados() {
-    if (!this.evento) {
-      this.relacionados = [];
-      return;
-    }
+    if (!this.evento) return;
 
     const cat = normalizarTexto(this.evento.categoria ?? '');
-    const all = this.eventosService.getEventos();
 
-    if (cat) {
-      this.relacionados = all
-        .filter(e => e.id !== this.evento!.id && normalizarTexto(e.categoria ?? '') === cat)
-        .slice(0, 4);
-    } else {
-      this.relacionados = all.filter(e => e.id !== this.evento!.id).slice(0, 4);
-    }
+    // Pedimos todos los eventos para filtrar los que se parecen
+    this.eventosService.getEventos().subscribe({
+      next: (all: Evento[]) => {
+        if (cat) {
+          this.relacionados = all
+            .filter(e => e.idEventos !== this.evento!.idEventos && normalizarTexto(e.categoria ?? '') === cat)
+            .slice(0, 4);
+        } else {
+          this.relacionados = all.filter(e => e.idEventos !== this.evento!.idEventos).slice(0, 4);
+        }
+      }
+    });
   }
 }

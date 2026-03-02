@@ -11,13 +11,13 @@ export class FavoritosService {
     localStorage.setItem(KEY, JSON.stringify(ids));
   }
 
-  isFav(id: string): boolean {
-    return this.getAll().includes(id);
+  isFav(id: number): boolean {
+    return this.getAll().includes(id.toString());
   }
 
-  toggle(id: string): void {
+  toggle(id: number): void {
     const ids = this.getAll();
-    const next = ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id];
+    const next = ids.includes(id.toString()) ? ids.filter(x => x !== id.toString()) : [...ids, id.toString()];
     this.setAll(next);
   }
 
@@ -25,7 +25,7 @@ export class FavoritosService {
     return this.getAll();
   }
 
-  remove(id: string): void {
-    this.setAll(this.getAll().filter(x => x !== id));
+  remove(id: number): void {
+    this.setAll(this.getAll().filter(x => x !== id.toString()));
   }
 }

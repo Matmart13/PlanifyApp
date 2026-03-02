@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { FiltroService } from '../core/services/filtro.service';
-import { AuthService } from '../core/services/auth.services';      // <-- tu nombre actual
-import { EventosService } from '../core/services/evento.service';  // <-- tu nombre actual
+import { AuthService } from '../core/services/auth.services';
+import { EventosService } from '../core/services/evento.service';
 
 @Component({
   selector: 'app-layout',
@@ -12,20 +12,40 @@ import { EventosService } from '../core/services/evento.service';  // <-- tu nom
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
-export class Layout {
+export class Layout implements OnInit { 
   menuCategoriasAbierto = false;
-
   categorias: string[] = [];
 
   constructor(
     private eventosService: EventosService,
     public filtro: FiltroService,
     public auth: AuthService
-  ) {
-    this.categorias = this.getCategoriasUnicas();
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarCategorias();
   }
 
-  // Drawer
+  private cargarCategorias(): void {
+    this.eventosService.getEventos().subscribe({
+      next: (eventos: any[]) => {
+        const set = new Set<string>();
+        
+        for (const e of eventos) {
+          // Accedemos a .nombre porque la categoría ahora es un objeto de Java
+          const c = (e.categoria?.nombre ?? '').trim(); 
+          if (c) set.add(c);
+        }
+        
+        // Convertimos el Set a Array y lo ordenamos alfabéticamente
+        this.categorias = Array.from(set).sort((a, b) => a.localeCompare(b));
+      },
+      error: (err) => console.error('Error al cargar categorías:', err)
+    });
+  }
+
+  // --- Métodos de UI ---
+
   toggleCategorias() {
     this.menuCategoriasAbierto = !this.menuCategoriasAbierto;
   }
@@ -43,22 +63,10 @@ export class Layout {
     this.cerrarCategorias();
   }
 
-  // Si quieres que “Contact” no haga nada todavía
   noop(ev: Event) {
     ev.preventDefault();
   }
 
-  private getCategoriasUnicas(): string[] {
-    const eventos = this.eventosService.getEventos();
-    const set = new Set<string>();
-    for (const e of eventos) {
-      const c = (e.categoria ?? '').trim();
-      if (c) set.add(c);
-    }
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }
-
-  // Miniatura por categoría (puedes personalizar)
   thumb(cat: string): string {
     const c = cat.toLowerCase();
     if (c.includes('cine')) return 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=200&q=60';

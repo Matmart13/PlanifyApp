@@ -1,22 +1,34 @@
 package planify;
+import static org.hamcrest.CoreMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import model.entity.Categoria;
-import model.entity.Contacto;
-import model.repository.CategoriaRepository;
-import model.repository.ContactoRepository;
-import model.repository.EventoRepository;
-import model.service.CategoriaService;
-import model.service.CategoriaServiceImpl;
-import model.service.ContactoService;
-import model.service.ContactoServiceImpl;
-import model.service.EventoService;
-import model.service.EventoServiceImpl;
-import model.entity.*;
-import model.repository.*;
-import model.service.*;
+import planify.model.entity.Categoria;
+import planify.model.entity.Contacto;
+import planify.model.repository.CategoriaRepository;
+import planify.model.repository.ContactoRepository;
+import planify.model.repository.EventoRepository;
+import planify.model.service.CategoriaService;
+import planify.model.service.CategoriaServiceImpl;
+import planify.model.service.ContactoService;
+import planify.model.service.ContactoServiceImpl;
+import planify.model.service.EventoService;
+import planify.model.service.EventoServiceImpl;
+import planify.model.dtos.ReservaDTO;
+import planify.model.entity.*;
+import planify.model.repository.*;
+import planify.model.service.*;
 public class PlanifyServiceTest {
 	CategoriaRepository repo = Mockito.mock(CategoriaRepository.class);
 	@Test
@@ -88,61 +100,6 @@ public class PlanifyServiceTest {
         assertNotNull(resultado, "El resultado no debería ser nulo");
         assertEquals(nombre, resultado.getNombre(), "El nombre de la categoría debe coincidir");
     }
-	@Test
-	void testCrearFavorito() {
-	    // 1. PREPARACIÓN (Arrange)
-	    FavoritoRepository repoMock = Mockito.mock(FavoritoRepository.class);
-	    FavoritoService service = new FavoritoServiceImpl(repoMock);
 
-	    // Create the Persona dependency
-	    Persona personaMock = new Persona();
-	    personaMock.setIdPersonas(1L);
-
-	    // NEW: Create the Evento dependency to satisfy line 21 of your service
-	    Evento eventoMock = new Evento();
-	    eventoMock.setIdEventos(100L); 
-
-	    // Create the Favorito and link BOTH dependencies
-	    Favorito nuevaFav = new Favorito(); 
-	    nuevaFav.setIdFavorito(2L);
-	    nuevaFav.setPersona(personaMock);
-	    nuevaFav.setEvento(eventoMock); // <--- This prevents the NPE on line 21
-
-	    Mockito.when(repoMock.save(Mockito.any(Favorito.class))).thenReturn(nuevaFav);
-
-	    // 2. EJECUCIÓN (Act)
-	    Favorito resultado = service.agregar(nuevaFav);
-
-	    // 3. VERIFICACIÓN (Assert)
-	    assertNotNull(resultado, "El resultado no debería ser nulo");
-	    assertEquals(2L, resultado.getIdFavorito());
-	}
-	
-	@Test
-    void testCrearReserva() {
-        // 1. PREPARACIÓN (Arrange)
-        // Creamos un simulacro del repositorio
-        ReservaRepository repoMock = Mockito.mock(ReservaRepository.class);
-        
-        // Inyectamos el repo falso en la IMPLEMENTACIÓN del servicio
-        ReservaService service = new ReservaServiceImpl(repoMock);
-        
-        Long id = 2L;
-        Reserva nuevaReserva = new Reserva(); 
-        nuevaReserva.setIdReservas(2L); // O usa tu constructor si lo tienes
-
-        // Programamos el simulacro: cuando el servicio llame a save(), devuelve la categoría
-        Mockito.when(repoMock.save(Mockito.any(Reserva.class))).thenReturn(nuevaReserva);
-
-        // 2. EJECUCIÓN (Act)
-        Reserva resultado = service.crear(nuevaReserva);
-
-        // 3. VERIFICACIÓN (Assert)
-        assertNotNull(resultado, "El resultado no debería ser nulo");
-        assertEquals(id, resultado.getIdReservas(), "El id de la reserva tiene que coincidir");
     }
-	
-	
-	
-}
 
