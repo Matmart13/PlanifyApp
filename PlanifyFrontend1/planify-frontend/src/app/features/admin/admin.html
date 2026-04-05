@@ -1,90 +1,51 @@
 <h2 class="text-xl font-semibold mb-4">Panel de administración</h2>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  <!-- FORM -->
   <div class="lg:col-span-1 rounded-2xl border border-white/10 bg-white/5 p-5">
     <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg font-semibold">
-        {{ editingId ? 'Editar evento' : 'Crear evento' }}
-      </h3>
-      <button
-        (click)="startCreate()"
-        class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white/10"
-      >
-        Nuevo
-      </button>
+      <h3 class="text-lg font-semibold">{{ editingId ? 'Editar' : 'Crear' }} evento</h3>
+      <button (click)="startCreate()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm">Nuevo</button>
     </div>
 
     <div class="grid gap-3">
-      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Título" [(ngModel)]="form.nombre" />
+      <input name="nombre" [(ngModel)]="form.nombre" placeholder="Título" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
 
-      <textarea class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-                placeholder="Descripción" rows="3" [(ngModel)]="form.descripcion"></textarea>
+      <textarea name="descripcion" [(ngModel)]="form.descripcion" placeholder="Descripción" rows="3" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"></textarea>
 
       <div class="grid grid-cols-2 gap-3">
-        <select class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-                [(ngModel)]="form.categoria">
-          <option>Cine</option>
-          <option>Teatro</option>
-          <option>Música</option>
-          <option>Videojuegos</option>
+        <select name="idCategorias" [(ngModel)]="form.idCategorias" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none">
+          <option [value]="1">Cine</option>
+          <option [value]="2">Teatro</option>
+          <option [value]="3">Música</option>
+          <option [value]="4">Videojuegos</option>
         </select>
 
-        <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-               type="date" [(ngModel)]="form.fechaInicio" />
+        <input name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
       </div>
 
-      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Ubicación" [(ngModel)]="form.ubicacion" />
+      <input name="ubicacion" [(ngModel)]="form.ubicacion" placeholder="Ubicación" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
+      <input name="precio" name="precio" type="number" [(ngModel)]="form.precio" placeholder="Precio (€)" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
+      <input name="imagenUrl" [(ngModel)]="form.imagenUrl" placeholder="Imagen URL" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
+      <input name="urlReserva" [(ngModel)]="form.urlReserva" placeholder="Web oficial" class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none" />
 
-      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             type="number" placeholder="Precio (€)" [(ngModel)]="form.precio" />
-
-      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Imagen URL" [(ngModel)]="form.imagenUrl" />
-
-      <input class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-zinc-100 outline-none"
-             placeholder="Web oficial" [(ngModel)]="form.urlReserva" />
-
-      <button (click)="save()"
-              class="rounded-xl bg-red-500 px-4 py-3 font-semibold text-white hover:opacity-90">
+      <button (click)="save()" class="rounded-xl bg-red-500 px-4 py-3 font-semibold text-white">
         {{ editingId ? 'Guardar cambios' : 'Crear evento' }}
       </button>
-
-      <p class="text-xs text-zinc-400">
-        *Este CRUD es demo (LocalStorage). En producción se conectaría a la API.
-      </p>
     </div>
   </div>
 
-  <!-- LISTA -->
   <div class="lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-5">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg font-semibold">Eventos ({{ eventos.length }})</h3>
-    </div>
-
+    <h3 class="text-lg font-semibold mb-3">Eventos ({{ eventos.length }})</h3>
     <div class="space-y-3">
-      <div *ngFor="let e of eventos"
-           class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4">
+      <div *ngFor="let e of eventos" class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-start justify-between">
         <div>
-<div class="text-sm text-zinc-300">
-  {{ e.categoria.nombre }} · {{ e.ubicacion }} · {{ e.fechaInicio }}
-</div>         
- <div class="mt-1 text-lg font-semibold">{{ e.nombre }}</div>
-          <div class="mt-2 text-sm text-zinc-300 line-clamp-2">{{ e.descripcion }}</div>
-          <div class="mt-2 text-sm text-zinc-200">Precio: <b>{{ e.precio }} €</b></div>
+          <div class="text-sm text-zinc-300">{{ e.categoria.nombre }} · {{ e.ubicacion }} · {{ e.fechaInicio }}</div>
+          <div class="mt-1 text-lg font-semibold">{{ e.nombre }}</div>
+          <div class="mt-2 text-sm text-zinc-200"><b>{{ e.precio }} €</b></div>
         </div>
-
         <div class="flex gap-2">
-          <button (click)="startEdit(e)"
-                  class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
-            Editar
-          </button>
-          <button (click)="remove(e.idEventos)"
-                  class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold hover:bg-white/10">
-            Borrar
-          </button>
+          <button (click)="startEdit(e)" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10">Editar</button>
+          <button (click)="remove(e.idEventos)" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10">Borrar</button>
         </div>
       </div>
     </div>
